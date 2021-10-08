@@ -183,7 +183,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
       utils = []
       for action in legalMoves:
-        utils.append(minimizer(gameState.generateSuccessor(PACMAN, action), dep, 1)[0])
+        utils.append(minimizer(gameState.generateSuccessor(PACMAN, action), dep, 1))
 
       bestUtil = max(utils) # get max utility
       bestIndices = [index for index in range(len(utils)) if utils[index] == bestUtil] # get actions that lead to maximum utility
@@ -192,7 +192,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def minimizer(gameState, dep, agent):
       if dep == self.depth or gameState.isWin() or gameState.isLose(): # terminal condition
-        return [self.evaluationFunction(gameState), Directions.STOP] 
+        return self.evaluationFunction(gameState)
 
       legalMoves = gameState.getLegalActions(agent)
 
@@ -204,13 +204,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
       else: 
         for action in legalMoves:
-          utils.append(minimizer(gameState.generateSuccessor(agent, action), dep, nextAgent)[0])
+          utils.append(minimizer(gameState.generateSuccessor(agent, action), dep, nextAgent))
         
       worstUtil = min(utils) # get minimum utility
 
-      return [worstUtil, legalMoves[utils.index(worstUtil)]] # use random method for tie breaking
+      return worstUtil # use random method for tie breaking
       
-    return maximizer(gameState, 0)[1]
+    return maximizer(gameState, PACMAN)[1]
     # END_YOUR_ANSWER
 
 ######################################################################################
