@@ -227,7 +227,69 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
 
     # BEGIN_YOUR_ANSWER (our solution is 42 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    PACMAN = 0
+    AGENT_COUNT = gameState.getNumAgents()
+    alpha = -float("inf")
+    beta = float("inf")
+
+    def maximizer(gameState, dep, alpha, beta):
+      if dep == self.depth or gameState.isWin() or gameState.isLose(): # terminal condition
+        return [self.evaluationFunction(gameState), Directions.STOP]
+
+      legalMoves = gameState.getLegalActions(PACMAN) # get pacman's all legalMoves
+
+      util = -float("inf")
+      move = Directions.STOP
+
+      for action in legalMoves:
+        value = minimizer(gameState.generateSuccessor(PACMAN, action), dep, 1, alpha, beta)
+        if util < value:
+          util = value
+          move = action
+
+        if util > beta:
+          return [util, action]
+        
+        alpha = max(alpha, util)
+
+      return [util, move]
+
+    def minimizer(gameState, dep, agent, alpha, beta):
+      if dep == self.depth or gameState.isWin() or gameState.isLose(): # terminal condition
+        return self.evaluationFunction(gameState)
+
+      legalMoves = gameState.getLegalActions(agent)
+
+      util = float("inf")
+      nextAgent = agent + 1
+
+      if nextAgent == AGENT_COUNT: # next turn is pacman's turn
+        for action in legalMoves:
+          value = maximizer(gameState.generateSuccessor(agent, action), dep + 1, alpha, beta)[0]
+          if util > value:
+            util = value
+
+          if util < alpha:
+            return util
+          
+          beta = min(beta, util)
+
+      else: 
+        for action in legalMoves:
+          value = minimizer(gameState.generateSuccessor(agent, action), dep, nextAgent, alpha, beta)
+          if util > value:
+            util = value
+
+          if util < alpha:
+            return util
+          
+          beta = min(beta, util)
+
+      return util
+      
+    move = maximizer(gameState, PACMAN, alpha, beta)
+    # print(move[0])
+    return move[1]
     # END_YOUR_ANSWER
 
 ######################################################################################
