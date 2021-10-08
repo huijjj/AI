@@ -176,7 +176,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
     AGENT_COUNT = gameState.getNumAgents()
 
     def maximizer(gameState, dep):
-      if dep == self.depth or gameState.isWin() or gameState.isLose(): # terminal condition
+      if gameState.isWin() or gameState.isLose(): # terminal condition
         return [self.evaluationFunction(gameState), Directions.STOP]
 
       legalMoves = gameState.getLegalActions(PACMAN) # get pacman's all legalMoves
@@ -191,7 +191,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
       return [bestUtil, legalMoves[random.choice(bestIndices)]] # use random method for tie breaking
 
     def minimizer(gameState, dep, agent):
-      if dep == self.depth or gameState.isWin() or gameState.isLose(): # terminal condition
+      if gameState.isWin() or gameState.isLose(): # terminal condition
         return self.evaluationFunction(gameState)
 
       legalMoves = gameState.getLegalActions(agent)
@@ -199,6 +199,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
       utils = []
       nextAgent = agent + 1
       if nextAgent == AGENT_COUNT: # next turn is pacman's turn
+        if dep + 1 == self.depth:
+          return self.evaluationFunction(gameState)
+
         for action in legalMoves:
           utils.append(maximizer(gameState.generateSuccessor(agent, action), dep + 1)[0])
 
@@ -210,7 +213,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
       return worstUtil # use random method for tie breaking
       
-    return maximizer(gameState, PACMAN)[1]
+    move = maximizer(gameState, PACMAN)
+    # print(move[0])
+    return move[1]
     # END_YOUR_ANSWER
 
 ######################################################################################
@@ -264,6 +269,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
       nextAgent = agent + 1
 
       if nextAgent == AGENT_COUNT: # next turn is pacman's turn
+        if dep + 1 == self.depth:
+          return self.evaluationFunction(gameState)
+
         for action in legalMoves:
           value = maximizer(gameState.generateSuccessor(agent, action), dep + 1, alpha, beta)[0]
           if util > value:
