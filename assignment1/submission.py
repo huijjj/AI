@@ -176,7 +176,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
     AGENT_COUNT = gameState.getNumAgents()
 
     def maximizer(gameState, dep):
-      if gameState.isWin() or gameState.isLose(): # terminal condition
+      if dep == self.depth or gameState.isWin() or gameState.isLose(): # terminal condition
         return [self.evaluationFunction(gameState), Directions.STOP]
 
       legalMoves = gameState.getLegalActions(PACMAN) # get pacman's all legalMoves
@@ -186,9 +186,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
         utils.append(minimizer(gameState.generateSuccessor(PACMAN, action), dep, 1))
 
       bestUtil = max(utils) # get max utility
-      bestIndices = [index for index in range(len(utils)) if utils[index] == bestUtil] # get actions that lead to maximum utility
 
-      return [bestUtil, legalMoves[random.choice(bestIndices)]] # use random method for tie breaking
+      return [bestUtil, legalMoves[utils.index(bestUtil)]]
 
     def minimizer(gameState, dep, agent):
       if gameState.isWin() or gameState.isLose(): # terminal condition
@@ -199,9 +198,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
       utils = []
       nextAgent = agent + 1
       if nextAgent == AGENT_COUNT: # next turn is pacman's turn
-        if dep + 1 == self.depth:
-          return self.evaluationFunction(gameState)
-
         for action in legalMoves:
           utils.append(maximizer(gameState.generateSuccessor(agent, action), dep + 1)[0])
 
@@ -211,7 +207,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         
       worstUtil = min(utils) # get minimum utility
 
-      return worstUtil # use random method for tie breaking
+      return worstUtil
       
     move = maximizer(gameState, PACMAN)
     # print(move[0])
@@ -269,9 +265,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
       nextAgent = agent + 1
 
       if nextAgent == AGENT_COUNT: # next turn is pacman's turn
-        if dep + 1 == self.depth:
-          return self.evaluationFunction(gameState)
-
         for action in legalMoves:
           value = maximizer(gameState.generateSuccessor(agent, action), dep + 1, alpha, beta)[0]
           if util > value:
@@ -317,7 +310,43 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
 
     # BEGIN_YOUR_ANSWER (our solution is 30 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    PACMAN = 0
+    AGENT_COUNT = gameState.getNumAgents()
+
+    def maximizer(gameState, dep):
+      if dep == self.depth or gameState.isWin() or gameState.isLose(): # terminal condition
+        return [self.evaluationFunction(gameState), Directions.STOP]
+
+      legalMoves = gameState.getLegalActions(PACMAN) # get pacman's all legalMoves
+
+      utils = []
+      for action in legalMoves:
+        utils.append(expectNode(gameState.generateSuccessor(PACMAN, action), dep, 1))
+
+      bestUtil = max(utils) # get max utility
+
+      return [bestUtil, legalMoves[utils.index(bestUtil)]]
+
+    def expectNode(gameState, dep, agent):
+      if dep == self.depth or gameState.isWin() or gameState.isLose(): # terminal condition
+        return self.evaluationFunction(gameState)
+
+      legalMoves = gameState.getLegalActions(agent)
+      util = 0
+      nextAgent = agent + 1
+      if nextAgent == AGENT_COUNT: # next turn is pacman's turn
+        for action in legalMoves:
+          util += maximizer(gameState.generateSuccessor(agent, action), dep + 1)[0]
+
+      else: 
+        for action in legalMoves:
+          util += expectNode(gameState.generateSuccessor(agent, action), dep, nextAgent)
+        
+      return util / len(legalMoves)
+      
+    move = maximizer(gameState, PACMAN)
+    # print(move[0])
+    return move[1]
     # END_YOUR_ANSWER
 
 ######################################################################################
