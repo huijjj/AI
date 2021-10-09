@@ -364,14 +364,14 @@ def betterEvaluationFunction(currentGameState):
   ghosts = currentGameState.getGhostStates() # 200 or -500 point for ghost
   score = currentGameState.getScore() # clear bonus is 500
 
-  FOODVALUE = 3
-  FOODRANGE = 4
+  FOODVALUE = 7
 
-  GHOSTVALUE = 500
-  GHOSTPANALTY = 1000
-  GHOSTRANGE = 2
+  GHOSTVALUE = 200
+  GHOSTPANALTY = 550
+  GHOSTDODGERANGE = 6
+  GHOSTHUNTRANGE = 2
 
-  CAPSULEVALUE = 500
+  CAPSULEVALUE = 200
 
   # food evaluation
   foodEvaluation = 0
@@ -379,7 +379,7 @@ def betterEvaluationFunction(currentGameState):
   if foods:
     for food in foods:
       foodDists.append(manhattanDistance(pos, food))
-      foodEvaluation += float(FOODVALUE) / min(foodDists)
+    foodEvaluation += float(FOODVALUE) / min(foodDists)
 
 
   # capsule evaluation
@@ -396,14 +396,14 @@ def betterEvaluationFunction(currentGameState):
   for ghost in ghosts:
     ghostPos = ghost.getPosition()
     ghostDist = manhattanDistance(pos, ghostPos)
-    if ghostDist <= GHOSTRANGE:
-      if ghost.scaredTimer > 0:
+    if ghost.scaredTimer >= 0:
+      if ghostDist <= GHOSTHUNTRANGE:
         ghostEvaluation += float(GHOSTVALUE) / (ghostDist + 1)
-      else :
+    else :
+      if ghostDist <= GHOSTDODGERANGE:
         ghostEvaluation -= float(GHOSTPANALTY) / (ghostDist + 1)
 
   return score + foodEvaluation + ghostEvaluation + capsuleEvaluation
-
   # END_YOUR_ANSWER
 
 # Abbreviation
