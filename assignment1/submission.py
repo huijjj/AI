@@ -357,8 +357,53 @@ def betterEvaluationFunction(currentGameState):
   Your extreme, unstoppable evaluation function (problem 4).
   """
 
-  # BEGIN_YOUR_ANSWER (our solution is 60 lines of code, but don't worry if you deviate from this)
-  raise NotImplementedError  # remove this line before writing code
+  # BEGIN_YOUR_ANSWER (our solution is 60 lines of code, but don't worry if you deviate from this)  
+  pos = currentGameState.getPacmanPosition()
+  foods = currentGameState.getFood().asList() # 10 points for each food
+  capsules = currentGameState.getCapsules()
+  ghosts = currentGameState.getGhostStates() # 200 or -500 point for ghost
+  score = currentGameState.getScore() # clear bonus is 500
+
+  FOODVALUE = 3
+  FOODRANGE = 4
+
+  GHOSTVALUE = 500
+  GHOSTPANALTY = 1000
+  GHOSTRANGE = 2
+
+  CAPSULEVALUE = 500
+
+  # food evaluation
+  foodEvaluation = 0
+  foodDists = []
+  if foods:
+    for food in foods:
+      foodDists.append(manhattanDistance(pos, food))
+      foodEvaluation += float(FOODVALUE) / min(foodDists)
+
+
+  # capsule evaluation
+  capsuleEvaluation = 0
+  closestCapsuleDist = -1
+  if capsules :
+    capsuleDists = []
+    for capsule in capsules:
+      capsuleDists.append(manhattanDistance(pos, capsule))
+    capsuleEvaluation = float(CAPSULEVALUE) / (min(capsuleDists) + 1)
+
+  # ghost evaluation
+  ghostEvaluation = 0
+  for ghost in ghosts:
+    ghostPos = ghost.getPosition()
+    ghostDist = manhattanDistance(pos, ghostPos)
+    if ghostDist <= GHOSTRANGE:
+      if ghost.scaredTimer > 0:
+        ghostEvaluation += float(GHOSTVALUE) / (ghostDist + 1)
+      else :
+        ghostEvaluation -= float(GHOSTPANALTY) / (ghostDist + 1)
+
+  return score + foodEvaluation + ghostEvaluation + capsuleEvaluation
+
   # END_YOUR_ANSWER
 
 # Abbreviation
