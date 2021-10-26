@@ -1,4 +1,4 @@
-# ID: 20202061 NAME: Hong Wooheon
+# ID: 20190846 NAME: JEONG HUIJONG
 ######################################################################################
 
 from engine.const import Const
@@ -19,7 +19,37 @@ def get_conditional_prob1(delta, epsilon, eta, c2, d2):
     """
     # Problem 1a
     # BEGIN_YOUR_ANSWER (our solution is 14 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    joint = [[[[[0, 0], [0, 0]], [[0, 0], [0, 0]]], [[[0, 0], [0, 0]], [[0, 0], [0, 0]]]], [[[[0, 0], [0, 0]], [[0, 0], [0, 0]]], [[[0, 0], [0, 0]], [[0, 0], [0, 0]]]]]
+
+    temp = 0
+    for c1 in range(2): # C_1
+        for c22 in range(2): # C_2
+            for c3 in range(2): # C_3
+                for d1 in range(2): # D_1
+                    for d3 in range(2): # D_3
+                        temp = 1
+
+                        temp = temp * (delta if c1 == 0 else 1 - delta) # P(c1)
+                        temp = temp * (1 - epsilon if c1 == c22 else epsilon) # P(c2|c1)
+                        temp = temp * (1 - epsilon if c22 == c3 else epsilon) # P(c3|c2)
+                        
+                        temp = temp * (1 - eta if c1 == d1 else eta) # P(d1|c1)
+                        temp = temp * (1 - eta if c22 == d2 else eta) # P(d2|c2)
+                        temp = temp * (1 - eta if c3 == d3 else eta) # P(d3|c3)
+
+                        joint[c1][c22][c3][d1][d3] = temp
+
+    margin = [0 ,0]
+    for c22 in range(2): # C_2
+        temp = 0
+        for c1 in range(2): # C_1
+            for c3 in range(2): # C_3
+                for d1 in range(2): # D_1
+                    for d3 in range(2): # D_3
+                        temp = temp + joint[c1][c22][c3][d1][d3]
+        margin[c22] = temp
+
+    return margin[c2] / (margin[0] + margin[1])
     # END_YOUR_ANSWER
 
 
@@ -36,7 +66,35 @@ def get_conditional_prob2(delta, epsilon, eta, c2, d2, d3):
     """
     # Problem 1b
     # BEGIN_YOUR_ANSWER (our solution is 17 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    joint = [[[[0, 0], [0, 0]], [[0, 0], [0, 0]]], [[[0, 0], [0, 0]], [[0, 0], [0, 0]]]]
+
+    temp = 0
+    for c1 in range(2): # C_1
+        for c22 in range(2): # C_2
+            for c3 in range(2): # C_3
+                for d1 in range(2): # D_1
+                        temp = 1
+
+                        temp = temp * (delta if c1 == 0 else 1 - delta) # P(c1)
+                        temp = temp * (1 - epsilon if c1 == c22 else epsilon) # P(c2|c1)
+                        temp = temp * (1 - epsilon if c22 == c3 else epsilon) # P(c3|c2)
+                        
+                        temp = temp * (1 - eta if c1 == d1 else eta) # P(d1|c1)
+                        temp = temp * (1 - eta if c22 == d2 else eta) # P(d2|c2)
+                        temp = temp * (1 - eta if c3 == d3 else eta) # P(d3|c3)
+
+                        joint[c1][c22][c3][d1] = temp
+
+    margin = [0 ,0]
+    for c22 in range(2): # C_2
+        temp = 0
+        for c1 in range(2): # C_1
+            for c3 in range(2): # C_3
+                for d1 in range(2): # D_1
+                        temp = temp + joint[c1][c22][c3][d1]
+        margin[c22] = temp
+
+    return margin[c2] / (margin[0] + margin[1])
     # END_YOUR_ANSWER
 
 
@@ -47,7 +105,7 @@ def get_epsilon():
     """
     # Problem 1c
     # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    return 1 / 2 # epsilon == 1 / 2 equals out the effect of evidence D_3 == d_3
     # END_YOUR_ANSWER
 
 
@@ -90,7 +148,7 @@ class ExactInference(object):
 
     def observe(self, agentX, agentY, observedDist):
         # BEGIN_YOUR_ANSWER (our solution is 9 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+
         # END_YOUR_ANSWER
 
     ############################################################
