@@ -148,7 +148,20 @@ class ExactInference(object):
 
     def observe(self, agentX, agentY, observedDist):
         # BEGIN_YOUR_ANSWER (our solution is 9 lines of code, but don't worry if you deviate from this)
+        numRows = self.belief.getNumRows()
+        numCols = self.belief.getNumCols()
 
+        for r in range(numRows):
+            for c in range(numCols):
+                cX = util.colToX(c)
+                cY = util.rowToY(r)
+                
+                dist = math.pow(cX - agentX, 2) + math.pow(cY - agentY, 2)
+                prior = util.pdf(math.sqrt(dist), Const.SONAR_STD, observedDist)
+                past = self.belief.getProb(r, c)
+                self.belief.setProb(r, c, past * prior)
+
+        self.belief.normalize()
         # END_YOUR_ANSWER
 
     ############################################################
