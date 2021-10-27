@@ -185,7 +185,25 @@ class ExactInference(object):
         if self.skipElapse:
             return  ### ONLY FOR THE GRADER TO USE IN Problem 2
         # BEGIN_YOUR_ANSWER (our solution is 8 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        numRows = self.belief.getNumRows()
+        numCols = self.belief.getNumCols()
+
+        oldbelief = []
+        for r in range(numRows):
+            for c in range(numCols):
+                oldbelief.append(self.belief.getProb(r, c))
+                self.belief.setProb(r, c, 0)
+
+        for oldr in range(numRows):
+            for oldc in range(numCols):
+                for newr in range(numRows):
+                    for newc in range(numCols):
+                        trans = self.transProb.get(((oldr, oldc), (newr, newc)))
+                        if trans:
+                            idx = oldr * numCols + oldc
+                            self.belief.addProb(newr, newc, oldbelief[idx] * trans)
+                            
+        self.belief.normalize()
         # END_YOUR_ANSWER
 
     # Function: Get Belief
