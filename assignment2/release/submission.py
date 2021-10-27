@@ -105,7 +105,7 @@ def get_epsilon():
     """
     # Problem 1c
     # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-    return 1 / 2 # epsilon == 1 / 2 equals out the effect of evidence D_3 == d_3
+    return 1 / 2 # epsilon == 1/2 makes C3 independent from C2, probability is always 1/2 regardless of previous position
     # END_YOUR_ANSWER
 
 
@@ -290,7 +290,18 @@ class ParticleFilter(object):
     ############################################################
     def observe(self, agentX, agentY, observedDist):
         # BEGIN_YOUR_ANSWER (our solution is 12 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        
+        # reweight
+        for tile in self.particles:
+            dist = math.sqrt(math.pow(agentX - util.colToX(tile[1]), 2) + math.pow(agentY - util.rowToY(tile[0]), 2))
+            self.particles[tile] = util.pdf(dist, Const.SONAR_STD, observedDist) * self.particles[tile]
+
+        #resample
+        newParticles = collections.defaultdict(int)
+        for i in range(self.NUM_PARTICLES):
+            newParticles[util.weightedRandomChoice(self.particles)] += 1
+
+        self.particles = newParticles
         # END_YOUR_ANSWER
         self.updateBelief()
 
@@ -316,7 +327,13 @@ class ParticleFilter(object):
     ############################################################
     def elapseTime(self):
         # BEGIN_YOUR_ANSWER (our solution is 7 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        newParticles = collections.defaultdict(int)
+
+        for tile in self.particles:
+            for i in range(self.particles[tile]):
+                newParticles[util.weightedRandomChoice(self.transProbDict[tile])] += 1
+
+        self.particles = newParticles
         # END_YOUR_ANSWER
 
     # Function: Get Belief
