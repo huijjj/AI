@@ -19,7 +19,7 @@ def problem_1a():
         pretty, good, bad, plot, not, scenery
     """
     # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    return { "pretty": 2, "good": 0, "bad": -1, "plot": -1, "not": -1, "scenery": 1 }
     # END_YOUR_ANSWER
 
 
