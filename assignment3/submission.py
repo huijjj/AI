@@ -40,7 +40,16 @@ def extractWordFeatures(x):
     Example: "I am what I am" --> {'I': 2, 'am': 2, 'what': 1}
     """
     # BEGIN_YOUR_ANSWER (our solution is 6 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    tokens = x.split(' ')
+    
+    features = {}
+    for token in tokens:
+        if token in features:
+            features[token] += 1
+        else:
+            features[token] = 1
+
+    return features
     # END_YOUR_ANSWER
 
 
@@ -70,7 +79,24 @@ def learnPredictor(trainExamples, testExamples, featureExtractor, numIters, eta)
         return 1 / (1 + math.exp(-n))
 
     # BEGIN_YOUR_ANSWER (our solution is 14 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    for _ in range(numIters):
+        for data in trainExamples:
+            features = featureExtractor(data[0])
+            answer = data[1]
+            weightedResult = dotProduct(features, weights)
+
+            # calculate loss
+            loss = {}
+            for feature, value in features.items():
+                loss[feature] = ((sigmoid(weightedResult) * math.exp(-1 * weightedResult) * -1) if (answer == 1) else sigmoid(weightedResult)) * value
+
+            # update weight
+            for feature, value in loss.items():
+                weights[feature] = (weights[feature] if (feature in weights) else 0) - (eta * value) 
+        
+        # trainError = evaluatePredictor(trainExamples, lambda x: (1 if dotProduct(featureExtractor(x), weights) >= 0 else -1))
+        # testError = evaluatePredictor(testExamples, lambda x: (1 if dotProduct(featureExtractor(x), weights) >= 0 else -1))
+        # print("train error: ", trainError, "test error: ", testError)
     # END_YOUR_ANSWER
     return weights
 
@@ -88,6 +114,20 @@ def extractBigramFeatures(x):
     {('am', 'what'): 1, 'what': 1, ('I', 'am'): 2, 'I': 2, ('what', 'I'): 1, 'am': 2, ('<s>', 'I'): 1, ('am', '</s>'): 1}
     """
     # BEGIN_YOUR_ANSWER (our solution is 5 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    phi = extractWordFeatures(x)
+    prev = "<s>"
+    features = x.split(' ')
+
+    for feature in features:
+        bigram = (prev, feature)
+        
+        if bigram in phi:
+            phi[bigram] += 1
+        else:
+            phi[bigram] = 1
+        
+        prev = feature
+
+    phi[(prev, "</s>")] = 1
     # END_YOUR_ANSWER
     return phi
