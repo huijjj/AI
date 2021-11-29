@@ -15,7 +15,11 @@ def euclidean_distance(dp1, dp2):
 
     Returns: the Euclidean distance between two data points
     """
-    pass
+    ret = 0
+    for i in range(len(dp1)):
+        ret += (dp1[i] - dp2[i]) ** 2
+
+    return ret ** (1 / 2)        
 
 
 # problem for students
@@ -31,7 +35,14 @@ def assign_data(data_point, centroids):
 
     Returns: a string as the key name of the closest centroid to the data point
     """
-    pass
+    ret = ""
+    minimum = float("inf")
+    for key, val in centroids.items():
+        if(euclidean_distance(data_point, val) < minimum):
+            ret = key
+            minimum = euclidean_distance(data_point, val)
+    
+    return ret
 
 
 # problem for students
@@ -50,7 +61,16 @@ def update_assignment(data, centroids):
              given centroid does not have any data points closest to it,
              do not include the centroid in the returned dictionary.
     """
-    pass
+    ret = {}
+    
+    for data_point in data:
+        centroid = assign_data(data_point, centroids)
+        if centroid in ret:
+            ret[centroid].append(data_point)
+        else:
+            ret[centroid] = [data_point]
+    
+    return ret
             
 
 # problem for students
@@ -63,8 +83,17 @@ def mean_of_points(data):
 
     Returns: a list of floats as the mean of the given data points
     """
-    pass
+    dim = len(data[0])
+    ret = [0.0 for _ in range(dim)]
+    
+    for data_point in data:
+        for i in range(dim):
+            ret[i] += data_point[i]
+    
+    for i in range(dim):
+        ret[i] /= len(data)
 
+    return ret
 
 # problem for students
 def update_centroids(assignment_dict):
@@ -77,7 +106,11 @@ def update_centroids(assignment_dict):
 
     Returns: A new dictionary representing the updated centroids
     """
-    pass
+    ret = {}
+    for key, val in assignment_dict.items():
+        ret[key] = mean_of_points(val)
+
+    return ret
 
 def main(data, init_centroids):
     #######################################################

@@ -174,9 +174,9 @@ def test_update_centroids():
 
 
 if __name__ == '__main__':
-    #test_eucliean_distance()
-    #test_assign_data()
-    #test_update_assignment()
-    #test_mean_of_points()
-    #test_update_centroids()
+    test_eucliean_distance()
+    test_assign_data()
+    test_update_assignment()
+    test_mean_of_points()
+    test_update_centroids()
     print("all tests passed.")
