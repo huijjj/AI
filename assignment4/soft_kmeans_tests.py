@@ -158,7 +158,7 @@ def test_update_centroids():
 
 
 if __name__ == '__main__':
-    #test_get_responsibility()
-    #test_update_soft_assignment()
-    #test_update_centroids()
+    test_get_responsibility()
+    test_update_soft_assignment()
+    test_update_centroids()
     print("all tests passed.")

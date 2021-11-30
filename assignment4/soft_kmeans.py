@@ -23,8 +23,16 @@ def get_responsibility(data_point, centroids, beta):
     Returns: a dictionary whose keys are the the centroids' key names and
              value is a float as the responsibility of the cluster for the data point.
     """
-    pass
+    normalizer = 0
+    ret = {}
+    for key, val in centroids.items():
+        ret[key] = math.exp(-beta * euclidean_distance(data_point, val))
+        normalizer += ret[key]
+    
+    for key in centroids:
+        ret[key] /= normalizer
 
+    return ret
 
 # problem for students
 def update_soft_assignment(data, centroids, beta):
@@ -42,7 +50,11 @@ def update_soft_assignment(data, centroids, beta):
              (In python, 'list' cannot be the 'key' of 'dict')
              
     """
-    pass
+    ret = {}
+    for data_point in data:
+        ret[tuple(data_point)] = get_responsibility(data_point, centroids, beta)
+
+    return ret
             
 
 # problem for students
@@ -56,7 +68,25 @@ def update_centroids(soft_assignment_dict):
 
     Returns: A new dictionary representing the updated centroids
     """
-    pass
+    ret = {}
+    normalizers = {}
+    for key, val in soft_assignment_dict.items():
+        data_point = np.array(key)
+        for k, v in val.items():
+            if k in ret:
+                ret[k] += data_point * v
+                normalizers[k] += v
+            else:
+                ret[k] = data_point * v
+                normalizers[k] = v
+    
+    for key in normalizers:
+        ret[key] /= normalizers[key]
+
+    for key, val in ret.items():
+        ret[key] = val.tolist()
+
+    return ret
 
 def main(data, init_centroids):
     #######################################################
